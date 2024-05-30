@@ -35,6 +35,6 @@ public class MinecraftDonwloadWebService {
     @POST
     public Response criarServidor(@QueryParam("version") final String version) {
         minecraftDonwloadService.criarServidor(version);
-        return Response.status(Response.Status.CREATED.getStatusCode()).build();
+        return Response.noContent().build();
     }
 }

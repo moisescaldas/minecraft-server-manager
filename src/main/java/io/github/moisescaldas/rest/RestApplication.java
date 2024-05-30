@@ -3,6 +3,7 @@ package io.github.moisescaldas.rest;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.github.moisescaldas.rest.exception.mapper.BusinessRuleExceptionMapper;
 import io.github.moisescaldas.rest.ws.MinecraftDonwloadWebService;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
@@ -13,7 +14,11 @@ public class RestApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         var classes = new HashSet<Class<?>>();
+        // Recursos
         classes.add(MinecraftDonwloadWebService.class);
+
+        // ExceptionMapper
+        classes.add(BusinessRuleExceptionMapper.class);
 
         return classes;
     }

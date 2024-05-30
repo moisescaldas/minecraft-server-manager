@@ -3,6 +3,8 @@ package io.github.moisescaldas.config;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import io.github.moisescaldas.core.interfaces.CheckIOException;
 import jakarta.annotation.PostConstruct;
@@ -24,10 +26,10 @@ public class FileManagerConfig {
         configurarDiretorios(RUNTIME_FOLDER);
     }
 
-    private static final void configurarDiretorios(File file) {
+    public static final void configurarDiretorios(File file) {
         if ((!file.exists()
                 || (file.isFile()
-                        && sucessfullOperation(() -> Files.delete(file.toPath()))))
+                        && sucessfullIOOperation(() -> Files.delete(file.toPath()))))
                 && file.mkdirs()) {
             System.out.println("Criado a pasta: " + file.getAbsolutePath());
         } else {
@@ -35,7 +37,15 @@ public class FileManagerConfig {
         }
     }
 
-    public static final boolean sucessfullOperation(CheckIOException executable) {
+    public static boolean deletarDiretorios(File file) {
+        return sucessfullIOOperation(() -> {
+            try (var pathStream = Files.walk(file.toPath())) {
+                pathStream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+            }
+        });
+    }
+
+    public static final boolean sucessfullIOOperation(CheckIOException executable) {
         try {
             executable.execute();
             return true;
