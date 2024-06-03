@@ -3,7 +3,7 @@ package io.github.moisescaldas.rest.ws;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import io.github.moisescaldas.core.service.MinecraftDonwloadService;
+import io.github.moisescaldas.core.service.MinecraftDownloadService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -13,13 +13,14 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
-@Path("/donwload")
+@Path("/download")
 @RequestScoped
-public class MinecraftDonwloadWebService {
+public class MinecraftDownloadWebService {
 
     @Inject
-    private MinecraftDonwloadService minecraftDonwloadService;
+    private MinecraftDownloadService minecraftDonwloadService;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -33,8 +34,9 @@ public class MinecraftDonwloadWebService {
     }
 
     @POST
+    @Produces(MediaType.APPLICATION_JSON)
     public Response criarServidor(@QueryParam("version") final String version) {
-        minecraftDonwloadService.criarServidor(version);
-        return Response.noContent().build();
+        var result = minecraftDonwloadService.criarServidor(version);
+        return Response.status(Status.CREATED.getStatusCode()).entity(result).build();
     }
 }

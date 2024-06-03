@@ -6,19 +6,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import org.omnifaces.cdi.Eager;
+
 import io.github.moisescaldas.core.interfaces.CheckIOException;
 import jakarta.annotation.PostConstruct;
-import jakarta.ejb.Singleton;
-import jakarta.ejb.Startup;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Singleton
-@Startup
+@ApplicationScoped
+@Eager
 public class FileManagerConfig {
-
-    public static final File MINECRAFT_SERVER_MANAGER_FOLDER = new File("minecraft-server-manager");
+    // pastas
+    public static final File USER_FOLDER = new File(System.getProperty("user.home"));
+    public static final File MINECRAFT_SERVER_MANAGER_FOLDER = new File(USER_FOLDER, "minecraft-server-manager");
     public static final File RUNTIME_FOLDER = new File(MINECRAFT_SERVER_MANAGER_FOLDER, "runtime");
     public static final File SERVERS_FOLDER = new File(MINECRAFT_SERVER_MANAGER_FOLDER, "servers");
-
+    
     @PostConstruct
     public void setup() {
         configurarDiretorios(MINECRAFT_SERVER_MANAGER_FOLDER);
@@ -43,6 +45,10 @@ public class FileManagerConfig {
                 pathStream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
             }
         });
+    }
+
+    public static boolean renomearArquivos(File source, File target) {
+        return source.renameTo(target);
     }
 
     public static final boolean sucessfullIOOperation(CheckIOException executable) {

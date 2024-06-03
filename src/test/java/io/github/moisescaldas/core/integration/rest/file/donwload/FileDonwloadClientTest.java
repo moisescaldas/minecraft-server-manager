@@ -8,10 +8,10 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class FileDonwloadClientTest {
+class FileDownloadClientTest {
     
     @Spy
-    private FileDonwloadClient fileDonwloadClient;
+    private FileDownloadClient fileDownloadClient;
 
     @Test
     void donwloadFileTest() {
@@ -19,7 +19,7 @@ class FileDonwloadClientTest {
        var url = "https://piston-data.mojang.com/v1/objects/145ff0858209bcfc164859ba735d4199aafa1eea/server.jar";
        
        // act
-        var file = fileDonwloadClient.donwloadFile(url, ".jar");
+        var file = fileDownloadClient.downloadFile(url, ".jar");
         System.out.println(file.getAbsolutePath());
 
        // assert

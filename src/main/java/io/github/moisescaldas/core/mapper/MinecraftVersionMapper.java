@@ -12,6 +12,6 @@ public interface MinecraftVersionMapper {
 
     MinecraftVersionMapper INSTANCE = Mappers.getMapper(MinecraftVersionMapper.class);
 
-    @Mapping(target = "version", source = "id")
+    @Mapping(source = "id", target = "version")
     MinecraftVersionDTO versionTOMinecraftVersionDTO(VersionDTO dto);
 }

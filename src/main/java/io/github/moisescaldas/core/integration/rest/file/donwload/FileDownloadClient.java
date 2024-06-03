@@ -14,9 +14,9 @@ import io.github.moisescaldas.core.integration.rest.AbstractRestBuilder;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class FileDonwloadClient extends AbstractRestBuilder {
+public class FileDownloadClient extends AbstractRestBuilder {
 
-    public File donwloadFile(String url, String fileExtension) {
+    public File downloadFile(String url, String fileExtension) {
         try {
             this.baseUrl = new URL(url);
             var file = File.createTempFile(UUID.randomUUID().toString(), fileExtension);

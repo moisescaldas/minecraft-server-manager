@@ -4,7 +4,6 @@
     <!-- Enable features -->
     <featureManager>
         <feature>jakartaee-10.0</feature>
-        <!-- <feature>microProfile-6.1</feature> -->
     </featureManager>
 
     <basicRegistry id="basic" realm="BasicRealm">
@@ -24,4 +23,5 @@
 
     <jndiURLEntry jndiName="url/mcversions" value="https://mcversions.net/download"></jndiURLEntry>
     <jndiURLEntry jndiName="url/launcherMeta" value="https://launchermeta.mojang.com/mc/game"></jndiURLEntry>
+    <jndiURLEntry jndiName="url/javaRunner" value="${JAVA_RUNNER}"></jndiURLEntry>
 </server>

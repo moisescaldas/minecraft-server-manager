@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.github.moisescaldas.config.FileManagerConfig;
 import io.github.moisescaldas.core.integration.jsoup.mcversions.MCVersionsClient;
-import io.github.moisescaldas.core.integration.rest.file.donwload.FileDonwloadClient;
+import io.github.moisescaldas.core.integration.rest.file.donwload.FileDownloadClient;
 import io.github.moisescaldas.core.integration.rest.launcher.meta.LauncherMetaClient;
 import io.github.moisescaldas.core.integration.rest.launcher.meta.dto.VersionDTO;
 import io.github.moisescaldas.core.integration.rest.launcher.meta.dto.VersionManifestDTO;
@@ -37,11 +37,11 @@ class MinecraftDonwloadServiceTest {
     private MCVersionsClient mcVersionsClient;
 
     @Mock
-    private FileDonwloadClient fileDonwloadClient;
+    private FileDownloadClient FileDownloadClient;
 
     @InjectMocks
-    private MinecraftDonwloadService minecraftDonwloadService = new MinecraftDonwloadService(launcherMetaClient,
-            mcVersionsClient, fileDonwloadClient);
+    private MinecraftDownloadService minecraftDonwloadService = new MinecraftDownloadService(launcherMetaClient,
+            mcVersionsClient, FileDownloadClient);
 
     @BeforeEach
     public void setup() {
@@ -83,7 +83,7 @@ class MinecraftDonwloadServiceTest {
         var donwloadUrl = "http://dattebayo.com/server.jar";
 
         Mockito.when(mcVersionsClient.getUrlDonwloadString(minecraftVersion)).thenReturn(donwloadUrl);
-        Mockito.when(fileDonwloadClient.donwloadFile(donwloadUrl, ".jar")).thenReturn(File.createTempFile("MOCK" + new Random().nextInt(),  ".jar"));
+        Mockito.when(FileDownloadClient.downloadFile(donwloadUrl, ".jar")).thenReturn(File.createTempFile("MOCK" + new Random().nextInt(),  ".jar"));
 
         // act and assert
         assertDoesNotThrow(() -> minecraftDonwloadService.criarServidor(minecraftVersion));
