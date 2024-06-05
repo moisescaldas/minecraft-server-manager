@@ -31,4 +31,12 @@ public class MinecraftServerWebService {
         minecraftServerService.iniciarServidor(serverName);
         return Response.noContent().build();
     }
+
+    @GET
+    @Path("{serverName}/config")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response recuperarConfiguracoes(@PathParam("serverName") String serverName) {
+        var configuracoes = minecraftServerService.recuperarPropriedades(serverName);
+        return Response.ok(configuracoes).build();
+    }
 }

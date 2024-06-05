@@ -3,7 +3,9 @@ package io.github.moisescaldas.rest;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.github.moisescaldas.rest.exception.mapper.ApplicationServerExceptionMapper;
 import io.github.moisescaldas.rest.exception.mapper.BusinessRuleExceptionMapper;
+import io.github.moisescaldas.rest.exception.mapper.ResourceNotFoundExceptionMapper;
 import io.github.moisescaldas.rest.ws.MinecraftDownloadWebService;
 import io.github.moisescaldas.rest.ws.MinecraftServerWebService;
 import jakarta.ws.rs.ApplicationPath;
@@ -20,7 +22,9 @@ public class RestApplication extends Application {
         classes.add(MinecraftServerWebService.class);
 
         // ExceptionMapper
+        classes.add(ResourceNotFoundExceptionMapper.class);
         classes.add(BusinessRuleExceptionMapper.class);
+        classes.add(ApplicationServerExceptionMapper.class);
 
         return classes;
     }

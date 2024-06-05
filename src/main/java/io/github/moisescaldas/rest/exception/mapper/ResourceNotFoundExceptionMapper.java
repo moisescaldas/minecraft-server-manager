@@ -24,7 +24,7 @@ public class ResourceNotFoundExceptionMapper implements ExceptionMapper<Resource
     @Override
     public Response toResponse(ResourceNotFoundException exception) {
             var dto = new ErrorResponseDTO<>();
-        dto.setError(MessagesPropertiesUtil.getString("R0002"));
+        dto.setError(MessagesPropertiesUtil.getString("R0001"));
         dto.setMessage(exception.getMessage());
         dto.setPath(request.getRequestURI()
                 + (!StringUtil.isBlank(request.getQueryString()) ? "?" + request.getQueryString() : ""));
