@@ -1,8 +1,11 @@
 package io.github.moisescaldas.rest.ws;
 
+import java.util.Map;
+
 import io.github.moisescaldas.core.service.MinecraftServerService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -35,8 +38,17 @@ public class MinecraftServerWebService {
     @GET
     @Path("{serverName}/config")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response recuperarConfiguracoes(@PathParam("serverName") String serverName) {
+    public Response recuperarConfiguracao(@PathParam("serverName") String serverName) {
         var configuracoes = minecraftServerService.recuperarPropriedades(serverName);
         return Response.ok(configuracoes).build();
     }
+
+    @POST
+    @Path("{serverName}/config")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response atualizarConfiguracao(@PathParam("serverName") String serverName, Map<String, Object> propriedades) {
+        minecraftServerService.atualizarPropriedades(serverName, propriedades);
+        return Response.noContent().build();
+    }
+
 }
