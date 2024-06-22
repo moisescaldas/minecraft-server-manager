@@ -14,9 +14,11 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/download")
 @RequestScoped
+@Tag(name = "Download API", description = "Recurso para instalar novos servidores")
 public class MinecraftDownloadWebService {
 
     @Inject

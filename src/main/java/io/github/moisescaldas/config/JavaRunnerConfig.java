@@ -31,7 +31,6 @@ public class JavaRunnerConfig {
     @Resource(lookup = "url/javaRunner", type = URL.class)
     private URL javaRunnerDownloadURL;
 
-    @Inject
     private FileDownloadClient fileDownloadClient;
 
     @Inject

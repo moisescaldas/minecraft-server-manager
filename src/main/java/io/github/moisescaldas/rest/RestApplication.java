@@ -10,8 +10,16 @@ import io.github.moisescaldas.rest.ws.MinecraftDownloadWebService;
 import io.github.moisescaldas.rest.ws.MinecraftServerWebService;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.info.Info;
 
 @ApplicationPath("/api")
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Minecraft Server Manager",
+                description = "Serviço WEB que gerencia servidores de minecraft",
+                version = "v1")
+)
 public class RestApplication extends Application {
 
     @Override

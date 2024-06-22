@@ -13,9 +13,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @RequestScoped
-@Path("servers")
+@Path("/servers")
+@Tag(name = "Servers API", description = "Gerencia os servidores já instalados")
 public class MinecraftServerWebService {
 
     @Inject
@@ -32,6 +34,13 @@ public class MinecraftServerWebService {
     @Path("{serverName}/start")
     public Response iniciarServidor(@PathParam("serverName") String serverName) {
         minecraftServerService.iniciarServidor(serverName);
+        return Response.noContent().build();
+    }
+
+    @POST
+    @Path("{serverName}/stop")
+    public Response pararServidor(@PathParam("serverName") String serverName) {
+        minecraftServerService.pararServidor(serverName);
         return Response.noContent().build();
     }
 

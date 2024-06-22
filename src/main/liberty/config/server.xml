@@ -4,6 +4,8 @@
     <!-- Enable features -->
     <featureManager>
         <feature>jakartaee-10.0</feature>
+        <feature>concurrent-3.0</feature>
+        <feature>mpOpenAPI-3.1</feature>
     </featureManager>
 
     <basicRegistry id="basic" realm="BasicRealm">
@@ -24,4 +26,12 @@
     <jndiURLEntry jndiName="url/mcversions" value="https://mcversions.net/download"></jndiURLEntry>
     <jndiURLEntry jndiName="url/launcherMeta" value="https://launchermeta.mojang.com/mc/game"></jndiURLEntry>
     <jndiURLEntry jndiName="url/javaRunner" value="${JAVA_RUNNER}"></jndiURLEntry>
+    
+    <managedExecutorService id="concurrent/executorService" jndiName="concurrent/executorService">
+        <concurrencyPolicy max="1" />
+    </managedExecutorService>
+
+    <managedExecutorService id="concurrent/loggingService" jndiName="concurrent/loggingService">
+        <concurrencyPolicy max="10" />
+    </managedExecutorService>
 </server>

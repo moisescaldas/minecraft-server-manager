@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 import io.github.moisescaldas.config.FileManagerConfig;
 import io.github.moisescaldas.core.dto.MinecraftServerDTO;
@@ -20,18 +20,32 @@ import io.github.moisescaldas.core.exceptions.ApplicationServerException;
 import io.github.moisescaldas.core.exceptions.BusinessRuleException;
 import io.github.moisescaldas.core.exceptions.ResourceNotFoundException;
 import io.github.moisescaldas.core.util.MessagesPropertiesUtil;
-import io.github.moisescaldas.core.util.TerminalUtil;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.ws.rs.NotFoundException;
+import lombok.NoArgsConstructor;
 
 @ApplicationScoped
+@NoArgsConstructor
 public class MinecraftServerService {
-
-    @Inject
-    @Named("javaRunner")
+    
+    @Resource(lookup = "concurrent/executorService", type = ManagedExecutorService.class)
+    private ManagedExecutorService executorService;
+    
     private File javaRunner;
+    
+    private TerminalService terminalService;
+    
+    private Map<String, Process> runningServers = new HashMap<>(); 
+   
+    @Inject
+    public MinecraftServerService(@Named("javaRunner") File javaRunner, TerminalService terminalService) {
+        this.javaRunner = javaRunner;
+        this.terminalService = terminalService;
+    }
 
     public List<MinecraftServerDTO> recuperarServidores() {
         var servidores = Arrays.asList(FileManagerConfig.SERVERS_FOLDER.list());
@@ -43,22 +57,36 @@ public class MinecraftServerService {
         var serverFolder = getServerFolder(serverName);
         var eulaFile = new File(serverFolder, "eula.txt");
 
-        if (!eulaFile.exists()) {
-            criarArquivoEula(eulaFile);
+        if (Objects.nonNull(runningServers.get(serverName)) && runningServers.get(serverName).isAlive()) {
+            throw new BusinessRuleException(MessagesPropertiesUtil.geString("E0009", serverName));
         }
 
-        final var process = TerminalUtil.execProcess("cd", serverFolder.getAbsolutePath(), "&",
-                javaRunner.getAbsolutePath(), "-jar", "server.jar", "-nogui");
+        try {
+            runningServers.put(serverName, executorService.submit(() -> {
+                if (!eulaFile.exists()) {
+                    final var process = terminalService.execProcess("cd", serverFolder.getAbsolutePath(), "&", javaRunner.getAbsolutePath(), "-jar", "server.jar", "-nogui");
+                    try {
+                        process.waitFor();
+                        criarArquivoEula(eulaFile);
+                    } catch (InterruptedException ex) {
+                        throw new ApplicationServerException(ex);
+                    }
+                } 
+                return terminalService.execProcess("cd", serverFolder.getAbsolutePath(), "&", javaRunner.getAbsolutePath(), "-jar", "server.jar", "-nogui");
+            }).get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ApplicationServerException(e);
+        }
+    }
 
-        // TODO: substituir por um service executor
-        new Thread(() -> {
-            try (var scanner = new Scanner(process.getInputStream())) {
+    public void pararServidor(final String serverName) {
+        var process = runningServers.remove(serverName);
 
-                while (scanner.hasNext()) {
-                    System.out.println(scanner.nextLine());
-                }
-            }
-        }).start();
+        if (Objects.isNull(process)) {
+            throw new ResourceNotFoundException(MessagesPropertiesUtil.geString("E0010", serverName));
+        }
+
+        terminalService.execProcess(TerminalService.TASKKILL_COMMAND, Long.toString(process.pid()));
     }
 
     private File getServerFolder(final String serverName) {
@@ -105,21 +133,24 @@ public class MinecraftServerService {
                 if (Objects.isNull(serverProperties.getProperty(entry.getKey()))) {
                     throw new BusinessRuleException(MessagesPropertiesUtil.geString("E0008", entry.getKey()));
                 }
-    
+
                 serverProperties.put(entry.getKey(), entry.getValue());
             });
 
             propertiesFOUT = new FileWriter(propertiesFile);
             serverProperties.store(propertiesFOUT, serverName);
             propertiesFOUT.close();
-            System.out.println("Configuração do servidor " + serverName + "atualizada: " + propertiesFile.getAbsolutePath());
+            System.out.println(
+                    "Configuração do servidor " + serverName + "atualizada: " + propertiesFile.getAbsolutePath());
         } catch (FileNotFoundException e) {
             throw new NotFoundException(MessagesPropertiesUtil.geString("E0007", serverName), e);
         } catch (IOException e) {
             throw new ApplicationServerException(e);
         } finally {
-            if (Objects.nonNull(propertiesFIS)) FileManagerConfig.sucessfullIOOperation(propertiesFIS::close);
-            if (Objects.nonNull(propertiesFOUT)) FileManagerConfig.sucessfullIOOperation(propertiesFOUT::close);
+            if (Objects.nonNull(propertiesFIS))
+                FileManagerConfig.sucessfullIOOperation(propertiesFIS::close);
+            if (Objects.nonNull(propertiesFOUT))
+                FileManagerConfig.sucessfullIOOperation(propertiesFOUT::close);
         }
     }
 
